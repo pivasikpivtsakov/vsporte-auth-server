@@ -21,7 +21,9 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(_app):
     # seed the db
-
+    async for db in get_db():
+        user_queries = UserQueries(db)
+        await user_queries.seed_db()
     yield
 
 

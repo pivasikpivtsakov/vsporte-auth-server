@@ -1,4 +1,6 @@
 from sqlalchemy import select, insert, delete, func
+# task requires to use postgesql only, so we can import specific functions
+from sqlalchemy.dialects.postgresql import insert as pinsert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
@@ -76,3 +78,26 @@ class UserQueries:
         )
         await self.db.commit()
         return deletion_result
+
+    async def seed_db(self):
+        await self.db.execute(
+            pinsert(UserModel)
+            .values({
+                "username": "vip",
+                "email": "user@mail.rb",
+                "password_hash": "$2b$12$djOFvxo9gSgM0hBFEaS89.SgwkdNPQFJhjiXZghEWTt91wbrfSo0O"
+            })
+            .on_conflict_do_nothing(
+
+            )
+            .returning(UserModel.id)
+        )
+        uid = await self.db.scalar(select(UserModel.id).where(UserModel.username == "vip"))
+        await self.db.execute(
+            pinsert(RoleInService)
+            .values({"user_id": uid, "role": "admin", "service": "someservice"})
+            .on_conflict_do_nothing(
+                constraint="roles_in_services_user_id_service_key",
+            )
+        )
+        await self.db.commit()
