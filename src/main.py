@@ -91,6 +91,14 @@ async def get_users_by_service(
         db: AsyncSession = Depends(get_db),
         role: RoleInService = Depends(check_role(RolesEnum.admin))
 ):
+    """
+    Get users with pagination
+    :param page_size: how many items in page starting with 0
+    :param db:
+    :param role:
+    :param page: page number starting with 1
+    """
+
     user_queries = UserQueries(db)
 
     limit = page_size
@@ -121,6 +129,10 @@ async def create_user(
         db: AsyncSession = Depends(get_db),
         role: RoleInService = Depends(check_role(RolesEnum.admin))
 ):
+    """
+    Create user in this service by username and password
+    """
+
     user_queries = UserQueries(db)
     hashed_pwd = hash_password(body.password)
     await user_queries.create_user(body.username, hashed_pwd, role.service)
@@ -139,6 +151,10 @@ async def change_user_access(
         db: AsyncSession = Depends(get_db),
         role: RoleInService = Depends(check_role(RolesEnum.admin))
 ):
+    """
+    Edit roles of user in your service
+    """
+
     user_queries = UserQueries(db)
     roles_queries = ServiceRolesQueries(db)
 
@@ -160,6 +176,10 @@ async def delete_user(
         db: AsyncSession = Depends(get_db),
         role: RoleInService = Depends(check_role(RolesEnum.admin))
 ):
+    """
+    Delete user if they belong to your service
+    """
+
     user_queries = UserQueries(db)
     target_user = await user_queries.get_user_by_username_if_has_role(body.username, role.service)
     if not target_user:
