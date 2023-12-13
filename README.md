@@ -34,6 +34,15 @@ alembic upgrade head
 uvicorn main:app --app-dir src/ 
 ```
 
+### docker
+
+Если у вас есть docker desktop, запустите приложение через файл `docker-compose.yml`. 
+Миграция бд выполнится автоматически.
+Создайте файл .env в корневой папке проекта. Заполните его переменными окружения.
+Если база запущена локально и у вас windows, в переменную `DB_HOST` введите `host.docker.internal`.
+На macOS/Linux воспользуйтесь network_mode: host или рекомендациями для своей операционной системы.
+По умолчанию порт 8000.
+
 ## API
 
 `post /jwt` получить jwt токен по паре (username или email) и password.
